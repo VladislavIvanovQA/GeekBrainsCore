@@ -1,4 +1,4 @@
-package leasson6;
+package lesson6;
 
 public class Animal {
     protected String name;
