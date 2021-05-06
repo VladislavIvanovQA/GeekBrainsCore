@@ -13,12 +13,13 @@ public class Plate {
     }
 
     public boolean decreaseFood(int amount) {
-        if (food > amount) {
+        if (food >= amount) {
             int result = food - amount;
             if (result <= 0) {
                 return false;
             } else {
                 food = result;
+                System.out.println("Cat finish eat!");
                 return true;
             }
         } else {
@@ -29,7 +30,7 @@ public class Plate {
 
     public void addFood(int amountFood) {
         if (amountFood > 0) {
-            this.food = +amountFood;
+            this.food =+ amountFood;
             System.out.println("Plate added food amount: " + amountFood);
         } else {
             System.err.println("Please added amount, min 1");

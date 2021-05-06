@@ -20,7 +20,9 @@ public class Cat {
         } else {
             System.out.println("Plate not have count food: " + appetite);
             p.addFood(appetite);
+            p.decreaseFood(appetite);
             isFull = true;
+            p.info();
         }
     }
 
