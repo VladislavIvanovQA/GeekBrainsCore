@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.web.HTMLEditor?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="lesson12.Controller">
+    <stylesheets>
+        <URL value="@/lesson12/css/style.css"/>
+    </stylesheets>
+
+    <top>
+        <MenuBar>
+            <Menu text="Chat">
+                <MenuItem text="Clear" onAction="#clearTextArea">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="l" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                    </accelerator>
+                </MenuItem>
+                <MenuItem text="Exit" onAction="#clickExit">
+                    <accelerator>
+                        <KeyCodeCombination alt="UP" code="e" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                    </accelerator>
+                </MenuItem>
+            </Menu>
+        </MenuBar>
+    </top>
+    <center>
+        <HTMLEditor fx:id="editor" disable="true" />
+    </center>
+    <bottom>
+        <HBox fx:id="hbox">
+            <TextField fx:id="enterTextField" onAction="#sendText" promptText="Enter message..." />
+            <Button text="Send" onAction="#sendText"/>
+        </HBox>
+    </bottom>
+</BorderPane>
