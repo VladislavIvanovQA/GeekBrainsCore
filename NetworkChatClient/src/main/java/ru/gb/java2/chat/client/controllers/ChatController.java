@@ -8,6 +8,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import ru.gb.java2.chat.client.ClientChat;
 import ru.gb.java2.chat.client.dialogs.Dialogs;
 import ru.gb.java2.chat.client.model.Network;
 import ru.gb.java2.chat.client.model.ReadMessageListener;
@@ -61,17 +62,17 @@ public class ChatController {
         } catch (IOException e) {
             Dialogs.NetworkError.SEND_MESSAGE.show();
         }
-        appendMessageToChat("Я", message);
+        appendMessageToChat(ClientChat.username, message.contains("/w") ? message.replace("/w " + sender + " ", "") : message);
     }
 
     private void appendMessageToChat(String sender, String message) {
         chatHistory.appendText(DateFormat.getDateTimeInstance().format(new Date()));
         chatHistory.appendText(System.lineSeparator());
         if (sender != null) {
-            chatHistory.appendText(sender + ":");
-            chatHistory.appendText(System.lineSeparator());
+            chatHistory.appendText(sender + ": " + message);
+        } else {
+            chatHistory.appendText(message);
         }
-        chatHistory.appendText(message);
         chatHistory.appendText(System.lineSeparator());
         chatHistory.appendText(System.lineSeparator());
         messageTextArea.clear();

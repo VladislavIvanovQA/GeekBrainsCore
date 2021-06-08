@@ -83,18 +83,23 @@ public class ClientHandler {
     private void processMessage(String message) throws IOException {
         if (message.startsWith("/w")){
             String[] parts = message.split(" ");
-            String username = parts[1];
-            message = Arrays.asList(parts).subList(2, parts.length).toString();
+            String userNickName = parts[1];
+
+            message = String.join(" ", parts).replace(parts[0] + " " + parts[1] + " ", "");
             boolean flagSend = false;
-            for (ClientHandler client : server.getClients()) {
-                if (client.getUsername().equals(username)) {
-                    client.sendMessage(message);
-                    flagSend = true;
-                    break;
+            if (!userNickName.equals(username)) {
+                for (ClientHandler client : server.getClients()) {
+                    if (client.getUsername().equals(userNickName)) {
+                        client.sendMessage(message);
+                        flagSend = true;
+                        break;
+                    }
                 }
-            }
-            if (!flagSend) {
-                sendMessage(String.format("Пользователь с ником %s не найден!", username));
+                if (!flagSend) {
+                    sendMessage(String.format("Пользователь с ником %s не найден!", userNickName));
+                }
+            } else {
+                server.broadcastMessage(message, this);
             }
         } else {
             server.broadcastMessage(message, this);

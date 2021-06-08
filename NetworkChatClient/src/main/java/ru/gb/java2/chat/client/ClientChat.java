@@ -24,6 +24,7 @@ public class ClientChat extends Application {
     private Stage authStage;
     private FXMLLoader chatWindowLoader;
     private FXMLLoader authLoader;
+    public static String username;
 
 
     @Override
@@ -110,6 +111,7 @@ public class ClientChat extends Application {
     }
 
     public void switchToMainChatWindow(String username) {
+        this.username = username;
         getPrimaryStage().setTitle(username);
         getAuthController().close();
         getAuthStage().close();
