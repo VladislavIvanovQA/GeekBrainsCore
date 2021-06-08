@@ -22,7 +22,8 @@ public class ChatController {
     private static final List<String> USERS_TEST_DATA = List.of(
             "username1",
             "username2",
-            "username3");
+            "username3",
+            "username4(Error)");
 
     @FXML
     public ListView<String> usersList;
@@ -53,7 +54,9 @@ public class ChatController {
         }
 
         try {
-            message = sender != null ? String.join(": ", sender, message) : message; // sender + ": " + message
+            if (sender != null && !sender.isBlank()) {
+                message = String.format("/w %s %s", sender, message);
+            }
             Network.getInstance().sendMessage(message);
         } catch (IOException e) {
             Dialogs.NetworkError.SEND_MESSAGE.show();

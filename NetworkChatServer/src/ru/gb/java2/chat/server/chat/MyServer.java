@@ -3,8 +3,6 @@ package ru.gb.java2.chat.server.chat;
 import ru.gb.java2.chat.server.chat.auth.AuthService;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -50,6 +48,11 @@ public class MyServer {
 
     public void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
+        authService.signOutUserByUsername(clientHandler.getUsername());
+    }
+
+    public List<ClientHandler> getClients() {
+        return clients;
     }
 
     public AuthService getAuthService() {

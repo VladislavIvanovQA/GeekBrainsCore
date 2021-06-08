@@ -7,6 +7,7 @@ public class User {
     private final String login;
     private final String password;
     private final String username;
+    private boolean isLogin;
 
     public User(String login, String password, String username) {
         this.login = login;
@@ -28,6 +29,14 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public boolean isLogin() {
+        return isLogin;
+    }
+
+    public void setLogin(boolean login) {
+        isLogin = login;
     }
 
     @Override
