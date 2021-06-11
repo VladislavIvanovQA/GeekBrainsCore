@@ -1,3 +1,7 @@
 .idea
 GeekBrainsJava.iml
 out
+NetworkChatClient/target
+NetworkChatClient/out
+NetworkChatServer/target
+NetworkChatServer/out
