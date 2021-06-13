@@ -5,3 +5,5 @@ NetworkChatClient/target
 NetworkChatClient/out
 NetworkChatServer/target
 NetworkChatServer/out
+NetworkChatClientServer/target
+NetworkChatClientServer/out
