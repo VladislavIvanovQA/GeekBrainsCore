@@ -6,11 +6,15 @@ import ru.gb.java2.chat.clientserver.commands.AuthCommandData;
 import ru.gb.java2.chat.clientserver.commands.PrivateMessageCommandData;
 import ru.gb.java2.chat.clientserver.commands.PublicMessageCommandData;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class ClientHandler {
+public class ClientHandler implements Serializable {
 
     private final MyServer server;
     private final Socket clientSocket;
@@ -32,6 +36,7 @@ public class ClientHandler {
                 authentication();
                 readMessages();
             } catch (IOException e) {
+                e.printStackTrace();
                 System.err.println("Failed to process message from client");
             } finally {
                 try {
@@ -44,6 +49,20 @@ public class ClientHandler {
     }
 
     private void authentication() throws IOException {
+        Timer timer = new Timer();
+        System.out.println("Start timer");
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("Try close connection");
+                    sendCommand(Command.authTimeOutCommand("Вышло время ожидания авторизации"));
+                    closeConnection();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 10000);
         while (true) {
             Command command = readCommand();
             if (command == null) {
@@ -52,7 +71,7 @@ public class ClientHandler {
 
             if (command.getType() == CommandType.AUTH) {
                 AuthCommandData data = (AuthCommandData) command.getData();
-                String login    = data.getLogin();
+                String login = data.getLogin();
                 String password = data.getPassword();
 
                 String username = server.getAuthService().getUsernameByLoginAndPassword(login, password);
@@ -64,6 +83,7 @@ public class ClientHandler {
                     this.username = username;
                     sendCommand(Command.authOkCommand(username));
                     server.subscribe(this);
+                    timer.cancel();
                     return;
                 }
             }
@@ -71,11 +91,11 @@ public class ClientHandler {
     }
 
 
-
     private Command readCommand() throws IOException {
         Command command = null;
         try {
             command = (Command) inputStream.readObject();
+            System.out.println(command);
         } catch (ClassNotFoundException e) {
             System.err.println("Failed to read Command class");
             e.printStackTrace();
@@ -118,6 +138,7 @@ public class ClientHandler {
     }
 
     public void sendCommand(Command command) throws IOException {
+        System.out.println("Server: " + command);
         outputStream.writeObject(command);
     }
 

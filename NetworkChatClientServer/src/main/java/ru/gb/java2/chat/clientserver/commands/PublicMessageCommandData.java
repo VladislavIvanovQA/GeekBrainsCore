@@ -14,4 +14,10 @@ public class PublicMessageCommandData implements Serializable {
         return message;
     }
 
+    @Override
+    public String toString() {
+        return "PublicMessageCommandData{" +
+                "message='" + message + '\'' +
+                '}';
+    }
 }

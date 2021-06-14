@@ -14,4 +14,11 @@ public class UpdateUsersListCommandData implements Serializable {
     public List<String> getUsers() {
         return users;
     }
+
+    @Override
+    public String toString() {
+        return "UpdateUsersListCommandData{" +
+                "users=" + users +
+                '}';
+    }
 }

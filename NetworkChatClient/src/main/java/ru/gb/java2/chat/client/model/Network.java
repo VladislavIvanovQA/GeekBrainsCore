@@ -114,6 +114,7 @@ public class Network {
 
     private void sendCommand(Command command) throws IOException {
         try {
+            System.out.println("Client: " + command);
             socketOutput.writeObject(command);
         } catch (IOException e) {
             System.err.println("Failed to send message to server");

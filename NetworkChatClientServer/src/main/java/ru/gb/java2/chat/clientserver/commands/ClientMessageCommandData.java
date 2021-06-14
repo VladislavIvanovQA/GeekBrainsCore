@@ -19,4 +19,12 @@ public class ClientMessageCommandData implements Serializable {
     public String getSender() {
         return sender;
     }
+
+    @Override
+    public String toString() {
+        return "ClientMessageCommandData{" +
+                "sender='" + sender + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }
