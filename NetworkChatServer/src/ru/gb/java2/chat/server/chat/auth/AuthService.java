@@ -15,29 +15,11 @@ public class AuthService {
     public String getUsernameByLoginAndPassword(String login, String password) {
         User requiredUser = new User(login, password);
         for (User user : USERS) {
-            if (requiredUser.equals(user) && !user.isLogin()) {
-                user.setLogin(true);
+            if (requiredUser.equals(user)) {
                 return user.getUsername();
             }
         }
 
         return null;
-    }
-
-    public User findUserByUsername(String username) {
-        for (User user : USERS) {
-            if (user.getUsername().equals(username)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    public void signOutUserByUsername(String username) {
-        for (User user : USERS) {
-            if (user.getUsername().equals(username)) {
-                user.setLogin(false);
-            }
-        }
     }
 }

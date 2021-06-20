@@ -2,6 +2,7 @@ package ru.gb.java2.chat.client.controllers;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -11,7 +12,11 @@ import javafx.scene.input.KeyEvent;
 import ru.gb.java2.chat.client.ClientChat;
 import ru.gb.java2.chat.client.dialogs.Dialogs;
 import ru.gb.java2.chat.client.model.Network;
-import ru.gb.java2.chat.client.model.ReadMessageListener;
+import ru.gb.java2.chat.client.model.ReadCommandListener;
+import ru.gb.java2.chat.clientserver.Command;
+import ru.gb.java2.chat.clientserver.CommandType;
+import ru.gb.java2.chat.clientserver.commands.ClientMessageCommandData;
+import ru.gb.java2.chat.clientserver.commands.UpdateUsersListCommandData;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -20,14 +25,10 @@ import java.util.List;
 
 public class ChatController {
 
-    private static final List<String> USERS_TEST_DATA = List.of(
-            "username1",
-            "username2",
-            "username3",
-            "username4(Error)");
-
     @FXML
-    public ListView<String> usersList;
+    private ListView<String> usersList;
+    @FXML
+    private Button reconnectButton;
     @FXML
     private Button sendButton;
     @FXML
@@ -37,11 +38,6 @@ public class ChatController {
 
 
     @FXML
-    public void initialize() {
-        usersList.setItems(FXCollections.observableArrayList(USERS_TEST_DATA));
-    }
-
-    @FXML
     private void sendMessage() {
         String message = messageTextArea.getText().trim();
         if (message.isEmpty()) {
@@ -49,30 +45,30 @@ public class ChatController {
             return;
         }
 
-        String sender = null;
+        String recipient = null;
         if (!usersList.getSelectionModel().isEmpty()) {
-            sender = usersList.getSelectionModel().getSelectedItem();
+            recipient = usersList.getSelectionModel().getSelectedItem();
         }
 
         try {
-            if (sender != null && !sender.isBlank()) {
-                message = String.format("/w %s %s", sender, message);
+            if (recipient != null) {
+                Network.getInstance().sendPrivateMessage(recipient, message);
+            } else {
+                Network.getInstance().sendMessage(message);
             }
-            Network.getInstance().sendMessage(message);
         } catch (IOException e) {
             Dialogs.NetworkError.SEND_MESSAGE.show();
         }
-        appendMessageToChat(ClientChat.username, message.contains("/w") ? message.replace("/w " + sender + " ", "") : message);
+        appendMessageToChat("Я", message);
     }
 
     private void appendMessageToChat(String sender, String message) {
         chatHistory.appendText(DateFormat.getDateTimeInstance().format(new Date()));
         chatHistory.appendText(System.lineSeparator());
         if (sender != null) {
-            chatHistory.appendText(sender + ": " + message);
-        } else {
-            chatHistory.appendText(message);
+            chatHistory.appendText(sender + ": ");
         }
+        chatHistory.appendText(message);
         chatHistory.appendText(System.lineSeparator());
         chatHistory.appendText(System.lineSeparator());
         messageTextArea.clear();
@@ -91,12 +87,28 @@ public class ChatController {
     }
 
     public void initMessageHandler() {
-        Network.getInstance().addReadMessageListener(new ReadMessageListener() {
+        Network.getInstance().addReadMessageListener(new ReadCommandListener() {
             @Override
-            public void processReceivedMessage(String message) {
-                Platform.runLater(() -> ChatController.this.appendMessageToChat("Server", message));
+            public void processReceivedCommand(Command command) {
+                if (command.getType() == CommandType.CLIENT_MESSAGE) {
+                    ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
+                    Platform.runLater(() -> ChatController.this.appendMessageToChat(data.getSender(), data.getMessage()));
+                } else if (command.getType() == CommandType.UPDATE_USERS_LIST) {
+                    UpdateUsersListCommandData data = (UpdateUsersListCommandData) command.getData();
+                    updateUsersList(data.getUsers());
+                }
             }
         });
     }
 
+    public void updateUsersList(List<String> users) {
+        Platform.runLater(() -> usersList.setItems(FXCollections.observableArrayList(users)));
+    }
+
+    public void reconnectToServer(ActionEvent actionEvent) {
+        Network network = Network.getInstance();
+        if (!network.isConnected()) {
+            network.connect();
+        }
+    }
 }
